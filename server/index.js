@@ -370,19 +370,19 @@ function initialSpawn (player) {
     return;
   }
 
-    if ((player.name.includes("Dav") || player.name.includes("dav")) && (player.name.includes("Renz") || player.name.includes("renz")) ) {
-        player.model = "u_f_y_danceburl_01";
-    }
-    else if (player.name.includes("listhdev")) {
-        player.model = "csb_stripper_02";
-    }
-    else {
-        player.model = spawnModels[getRandomListEntry(spawnModels)];
-    }
+  if ((player.name.includes("Dav") || player.name.includes("dav")) && (player.name.includes("Renz") || player.name.includes("renz")) ) {
+    player.model = "u_f_y_danceburl_01";
+  }
+  else if (player.name.includes("listhdev")) {
+      player.model = "csb_stripper_02";
+  }
+  else {
+      player.model = spawnModels[getRandomListEntry(spawnModels)];
+  }
 
-    player.setMeta("vehicles", []);
-    player.setMeta("trains", []);
-    let index = getRandomListEntry(spawnsPos);
+  player.setMeta("vehicles", []);
+  player.setMeta("trains", []);
+  let index = getRandomListEntry(spawnsPos);
   const spawn = spawnsPos[index];
   player.spawn(spawn.x, spawn.y, spawn.z, 0);
   player.rot = spawnsRot[index];
@@ -397,7 +397,7 @@ function initialSpawn (player) {
     }
     alt.clearTimeout(connectTimeout);
   }, 1000);
-});
+}
 
 alt.on("playerDeath", (player, killer, weapon) => {
     let index = getRandomListEntry(spawnsPos);
