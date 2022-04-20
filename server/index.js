@@ -139,6 +139,12 @@ const weapons = [
   "ball",
 ];
 
+const allowedUsers = [
+  "625ff9b8b7039243df5fc205",
+  "626006167700434b7813a25e"
+];
+
+
 //const jsonData= require('./fuhrpark.json'); 
 
 let train;
@@ -349,18 +355,49 @@ function spawnVeh(player, model, pos, rot, max) {
 
 
 
-alt.on('playerConnect', playerConnect);
+alt.on('playerConnect', showAuthWindow);
 
-function playerConnect(player) {
-    alt.emit('discord:BeginAuth', player);
+//function playerConnect(player) {
+//    alt.emit('discord:BeginAuth', player);
+//}
+
+function showAuthWindow(player) {
+    alt.emitClient(player, 'auth:Open');
+    console.log(`${player.name} has connected!`);
+}
+
+alt.on('auth:Done', exitAuthWindow);
+
+function exitAuthWindow(player, id, username, email) {
+    alt.emitClient(player, 'auth:Exit');
+    console.log(`${player.name} has authenticated!`);
+    console.log(`Their Database ID is: ${id}`);
+    //initialSpawn(player);
+    checkIfAllowed(player, id, username, email);
 }
 
 
-alt.on('discord:AuthDone', playerAuthDone);
+//alt.on('discord:AuthDone', playerAuthDone);
 
-function playerAuthDone(player, discordInfo) {
-    console.log(discordInfo);
+//function playerAuthDone(player, discordInfo) {
+//    console.log(discordInfo);
+//    initialSpawn(player);
+//}
+
+
+function checkIfAllowed(player, id, username, email) {
+  let allowed = false;
+  for (let i = 0; i < allowedUsers.length; i++) {
+    if (allowedUsers[i] == id) {
+      allowed = true;
+    }
+  }
+  if (allowed) {
     initialSpawn(player);
+  }
+  else {
+    player.kick();
+  }
 }
 
 
