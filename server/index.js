@@ -1,9 +1,9 @@
 import * as alt from "alt-server";
 import * as chat from "chat";
-import * as sm from "simplymongo";
+//import * as sm from "simplymongo";
 //import json from "./fuhrpark.json";
 
-const db = sm.getDatabase();
+//const db = sm.getDatabase();
 
 
 const spawnsPos = [
@@ -141,11 +141,6 @@ const weapons = [
   "snowball",
   "pipebomb",
   "ball",
-];
-
-const allowedUsers = [
-  "625ff9b8b7039243df5fc205",
-  "626006167700434b7813a25e"
 ];
 
 
@@ -404,14 +399,14 @@ function initialSpawn (player, id, username, email) {
       player.model = spawnModels[getRandomListEntry(spawnModels)];
   } */
 
-  const models = await db.fetchAllByField('username', username, 'models');
+  //const models = await db.fetchAllByField('username', username, 'models');
 
-  if (models.length <= 0) {
+  //if (models.length <= 0) {
     player.model = spawnModels[getRandomListEntry(spawnModels)];
-  }
-  else {
-    player.model = models[0].model;
-  } 
+  //}
+  //else {
+  //  player.model = models[0].model;
+  //} 
 
 
   player.setMeta("vehicles", []);
@@ -813,12 +808,15 @@ chat.registerCmd("model", (player, args) => {
 
   let username = player.getMeta("username");
 
-  const document = {
-      username,
-      model: args[0]
-  };
+  alt.emit('auth:writeModel', username, args[0]);
+  
+  
+  //const document = {
+  //    username,
+  //    model: args[0]
+  //};
 
-  const dbData = await db.insertData(document, 'models', true);
+  //const dbData = await db.insertData(document, 'models', true);
 
 });
 
