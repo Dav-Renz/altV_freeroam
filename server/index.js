@@ -386,7 +386,7 @@ function exitAuthWindow(player, id, username, email) {
 
 
 function checkIfAllowed(player, id, username, email) {
-  let allowed = false;
+  /let allowed = false;
   for (let i = 0; i < allowedUsers.length; i++) {
     if (allowedUsers[i] == id) {
       allowed = true;
@@ -396,7 +396,8 @@ function checkIfAllowed(player, id, username, email) {
     initialSpawn(player);
   }
   else {
-    player.kick();
+  //  player.kick();
+    initialSpawn(player);
   }
 }
 
