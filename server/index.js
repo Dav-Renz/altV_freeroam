@@ -1,6 +1,10 @@
 import * as alt from "alt-server";
 import * as chat from "chat";
+import * as sm from "simplymongo";
 //import json from "./fuhrpark.json";
+
+const db = sm.getDatabase();
+
 
 const spawnsPos = [
   //{ x: -695.1956176757812, y: 83.94725036621094, z: 55.85205078125 },
@@ -372,8 +376,7 @@ function exitAuthWindow(player, id, username, email) {
     alt.emitClient(player, 'auth:Exit');
     console.log(`${player.name} has authenticated!`);
     console.log(`Their Database ID is: ${id}`);
-    //initialSpawn(player);
-    checkIfAllowed(player, id, username, email);
+    initialSpawn(player, id, username, email);
 }
 
 
@@ -385,29 +388,12 @@ function exitAuthWindow(player, id, username, email) {
 //}
 
 
-function checkIfAllowed(player, id, username, email) {
-  let allowed = false;
-  for (let i = 0; i < allowedUsers.length; i++) {
-    if (allowedUsers[i] == id) {
-      allowed = true;
-    }
-  }
-  if (allowed) {
-    initialSpawn(player);
-  }
-  else {
-  //  player.kick();
-    initialSpawn(player);
-  }
-}
-
-
-function initialSpawn (player) {
+function initialSpawn (player, id, username, email) {
   if (player.name.includes("admin")) {
     player.kick();
     return;
   }
-
+/* 
   if ((player.name.includes("Dav") || player.name.includes("dav")) && (player.name.includes("Renz") || player.name.includes("renz")) ) {
     player.model = "u_f_y_danceburl_01";
   }
@@ -416,10 +402,21 @@ function initialSpawn (player) {
   }
   else {
       player.model = spawnModels[getRandomListEntry(spawnModels)];
+  } */
+
+  const models = await db.fetchAllByField('username', username, 'models');
+
+  if (models.length <= 0) {
+    player.model = spawnModels[getRandomListEntry(spawnModels)];
   }
+  else {
+    player.model = models[0].model;
+  } 
+
 
   player.setMeta("vehicles", []);
   player.setMeta("trains", []);
+  player.setMeta("username", username)
   let index = getRandomListEntry(spawnsPos);
   const spawn = spawnsPos[index];
   player.spawn(spawn.x, spawn.y, spawn.z, 0);
@@ -813,6 +810,16 @@ chat.registerCmd("model", (player, args) => {
     return;
   }
   player.model = args[0];
+
+  let username = player.getMeta("username");
+
+  const document = {
+      username,
+      model: args[0]
+  };
+
+  const dbData = await db.insertData(document, 'models', true);
+
 });
 
 chat.registerCmd("bus3state", (player, args) => {
