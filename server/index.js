@@ -367,11 +367,11 @@ function showAuthWindow(player) {
 
 alt.on('auth:Done', exitAuthWindow);
 
-function exitAuthWindow(player, id, username, email) {
+function exitAuthWindow(player, id, username, email, model) {
     alt.emitClient(player, 'auth:Exit');
     console.log(`${player.name} has authenticated!`);
     console.log(`Their Database ID is: ${id}`);
-    initialSpawn(player, id, username, email);
+    initialSpawn(player, id, username, email, model);
 }
 
 
@@ -383,7 +383,7 @@ function exitAuthWindow(player, id, username, email) {
 //}
 
 
-function initialSpawn (player, id, username, email) {
+function initialSpawn (player, id, username, email, model) {
   if (player.name.includes("admin")) {
     player.kick();
     return;
@@ -399,14 +399,14 @@ function initialSpawn (player, id, username, email) {
       player.model = spawnModels[getRandomListEntry(spawnModels)];
   } */
 
-  //const models = await db.fetchAllByField('username', username, 'models');
 
-  //if (models.length <= 0) {
+  if (model == null) {
     player.model = spawnModels[getRandomListEntry(spawnModels)];
-  //}
-  //else {
-  //  player.model = models[0].model;
-  //} 
+  }
+  else {
+      player.model = model;
+  }
+    
 
 
   player.setMeta("vehicles", []);
