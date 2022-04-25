@@ -367,11 +367,12 @@ function showAuthWindow(player) {
 
 alt.on('auth:Done', exitAuthWindow);
 
-function exitAuthWindow(player, id, username, email, model) {
+function exitAuthWindow(player, id, username, email) {
     alt.emitClient(player, 'auth:Exit');
     console.log(`${player.name} has authenticated!`);
     console.log(`Their Database ID is: ${id}`);
-    initialSpawn(player, id, username, email, model);
+    //initialSpawn(player, id, username, email);
+    alt.emit('auth:getModel', player, id, username, email);
 }
 
 
@@ -381,6 +382,23 @@ function exitAuthWindow(player, id, username, email, model) {
 //    console.log(discordInfo);
 //    initialSpawn(player);
 //}
+
+
+
+
+alt.on('auth:ModelGetted', initialSpawn);
+
+alt.on('auth:noModel', noModel):
+
+function noModel (player, id, userName, email) {
+
+    let model = spawnModels[getRandomListEntry(spawnModels)];
+
+    initialSpawn(player, id, userName, email, model)
+
+}
+
+
 
 
 function initialSpawn (player, id, username, email, model) {
@@ -399,16 +417,9 @@ function initialSpawn (player, id, username, email, model) {
       player.model = spawnModels[getRandomListEntry(spawnModels)];
   } */
 
+  player.model = model;
 
-  if (model == null) {
-    player.model = spawnModels[getRandomListEntry(spawnModels)];
-  }
-  else {
-      player.model = model;
-  }
-    
-
-
+  
   player.setMeta("vehicles", []);
   player.setMeta("trains", []);
   player.setMeta("username", username)
