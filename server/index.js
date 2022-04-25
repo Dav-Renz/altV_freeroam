@@ -388,7 +388,7 @@ function exitAuthWindow(player, id, username, email) {
 
 alt.on('auth:ModelGetted', initialSpawn);
 
-alt.on('auth:noModel', noModel):
+alt.on('auth:noModel', noModel);
 
 function noModel (player, id, userName, email) {
 
@@ -419,7 +419,7 @@ function initialSpawn (player, id, username, email, model) {
 
   player.model = model;
 
-  
+
   player.setMeta("vehicles", []);
   player.setMeta("trains", []);
   player.setMeta("username", username)
