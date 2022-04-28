@@ -228,6 +228,33 @@ function spawnFromList(player) {
 }
 
 
+function setWeather(weather) {
+
+    const players = alt.Player.all;
+    for (let i = 0; i < players.length; i++) {
+        try {
+            players[i].setWeather(weather);
+        } catch (e) {
+            alt.log(e);
+            alt.log("Wetter nicht verfügbar")
+        }
+    }
+}
+
+function setDateTime(day, month, year, hour, minute, second) {
+
+    const players = alt.Player.all;
+    for (let i = 0; i < players.length; i++) {
+        try {
+            players[i].setDateTime(day, month, year, hour, minute, second);
+        } catch (e) {
+            alt.log(e);
+            alt.log("Zeit nicht verfügbar");
+        }
+    }
+}
+
+
 function spawnFuhrpark(player) {
     spawnFromList(player);
 }
@@ -869,6 +896,20 @@ chat.registerCmd("bus3state", (player, args) => {
     }
     bus3ExtraState(player, args[0]);
 });
+
+
+chat.registerCmd("syncTime", (args) => {
+    setDateTime(args[0], args[1], args[2], args[3], args[4], args[5])
+});
+
+chat.registerCmd("syncWeather", (args) => {
+    setWeather(args[0]);
+});
+
+
+
+
+
 //-------------------------------------- WEAPON STUFF -----------------------------------------
 
 
