@@ -574,20 +574,16 @@ chat.registerCmd("kill", (player, args) => {
 
 chat.registerCmd("veh", (player, args) => {
     if (args.length === 0) {
-      chat.send(player, "Usage: /veh (vehicleModel)");
-
       chat.send(player, "{ff0000}========== {eb4034}HELP Veh {ff0000} ==========");
       chat.send(player, "{ff0000}= {34abeb}/veh spawn {40eb34}(model)   {ffffff} Spawn vehicle model");
       chat.send(player, "{ff0000}= {34abeb}/veh repair {40eb34}   {ffffff} Repairs current vehicle");
       chat.send(player, "{ff0000}= {34abeb}/veh repair all {40eb34}   {ffffff} Repairs all your vehicles");
       chat.send(player, "{ff0000}= {34abeb}/veh del {40eb34}   {ffffff} Deletes current vehicle");
       chat.send(player, "{ff0000}= {34abeb}/veh del all {40eb34}   {ffffff} Deletes all your vehicles");
-      chat.send(player, "{ff0000}= {34abeb}/veh pos {40eb34}   {ffffff} Outputs the current vehicle position");
-      chat.send(player, "{ff0000}= {34abeb}/veh rot {40eb34}   {ffffff} Outputs the current vehicle rotation");
       chat.send(player, "{ff0000}= {34abeb}/veh mod {40eb34}(modType) (id)   {ffffff} Adds a modification to the vehicle");
       chat.send(player, "{ff0000}= {34abeb}/veh liv {40eb34}(id)   {ffffff} Changes the livery");
       chat.send(player, "{ff0000}= {34abeb}/veh extra {40eb34}(id)   {ffffff} Toggles an extra");
-      chat.send(player, "{ff0000}= {34abeb}/veh plateText {40eb34}(id)   {ffffff} Sets the plate text");
+      chat.send(player, "{ff0000}= {34abeb}/veh plateText {40eb34}(Text)   {ffffff} Sets the plate text");
       chat.send(player, "{ff0000} ========================");
 
       return;
@@ -823,10 +819,10 @@ chat.registerCmd("veh", (player, args) => {
             let vehicle = player.vehicle;
             
 
-            let string = '';
+            let string = args[1];
             
-            for (let i = 1; i < args.length; i++) {
-                string += args[i];
+            for (let i = 2; i < args.length; i++) {
+                string = string + ` ` + args[i];
             }
 
             try {
