@@ -249,24 +249,43 @@ function addCol(vehicle, type, nr, player) {
 }
 
 function setExtras(player, vehicle, id, bool){
-    var state;
-    if (bool==="true" || bool === true){
-        state = true;
-    }
-    else if (bool==="false" || bool === false){
-        state = false;
-    }
-    else {
-        chat.send(player, `Das ist kein boolean du idiot!!`);
-        alt.log(e);
-        return;
-    }
+    // var state;
+    // if (bool==="true" || bool === true){
+    //     state = true;
+    // }
+    // else if (bool==="false" || bool === false){
+    //     state = false;
+    // }
+    // else {
+    //     chat.send(player, `Das ist kein boolean du idiot!!`);
+    //     alt.log(e);
+    //     return;
+    // }
     try {
-        vehicle.setExtra(id, state);
-        } catch (e) {
-            chat.send(player, `Irgendwas komisch`);
-            alt.log(e);
+        vehicle.setExtra(id, bool);
+    } catch (e) {
+        chat.send(player, `Irgendwas komisch`);
+        alt.log(e);
+    }
+}
+
+function toggleExtra(player, vehicle, id) {
+    let status = vehicle.getExtra(id);
+
+    try {
+        if (status) {
+            vehicle.setExtra(id, false);
         }
+        else {
+            vehicle.setExtra(id, true);
+        }
+    } catch (e) {
+        chat.send(player, `Kaputt`);
+        alt.log(e);
+    }
+
+
+    
 }
 
 function bus3ExtraState(player, state){
@@ -491,6 +510,8 @@ chat.registerCmd("help", (player, args) => {
   chat.send(player, "{ff0000}= {34abeb}/model {40eb34}(modelName)   {ffffff} Change Player Model");
   chat.send(player, "{ff0000}= {34abeb}/weapon {40eb34}(weaponName)   {ffffff} Get specified weapon");
   chat.send(player, "{ff0000}= {34abeb}/weapons    {ffffff} Get all weapons");
+  chat.send(player, "{ff0000}= {34abeb}/health    {ffffff} Gives full health");
+  chat.send(player, "{ff0000}= {34abeb}/armour    {ffffff} Gives full armour");
   chat.send(player, "{ff0000} ========================");
 });
 
@@ -558,16 +579,22 @@ chat.registerCmd("veh", (player, args) => {
       chat.send(player, "{ff0000}========== {eb4034}HELP Veh {ff0000} ==========");
       chat.send(player, "{ff0000}= {34abeb}/veh spawn {40eb34}(model)   {ffffff} Spawn vehicle model");
       chat.send(player, "{ff0000}= {34abeb}/veh repair {40eb34}   {ffffff} Repairs current vehicle");
-      chat.send(player, "{ff0000}= {34abeb}/veh del {40eb34}   {ffffff} delete vehicle");
-      chat.send(player, "{ff0000}= {34abeb}/weapon {40eb34}(weaponName)   {ffffff} Get specified weapon");
-      chat.send(player, "{ff0000}= {34abeb}/weapons    {ffffff} Get all weapons");
+      chat.send(player, "{ff0000}= {34abeb}/veh repair all {40eb34}   {ffffff} Repairs all your vehicles");
+      chat.send(player, "{ff0000}= {34abeb}/veh del {40eb34}   {ffffff} Deletes current vehicle");
+      chat.send(player, "{ff0000}= {34abeb}/veh del all {40eb34}   {ffffff} Deletes all your vehicles");
+      chat.send(player, "{ff0000}= {34abeb}/veh pos {40eb34}   {ffffff} Outputs the current vehicle position");
+      chat.send(player, "{ff0000}= {34abeb}/veh rot {40eb34}   {ffffff} Outputs the current vehicle rotation");
+      chat.send(player, "{ff0000}= {34abeb}/veh mod {40eb34}(modType) (id)   {ffffff} Adds a modification to the vehicle");
+      chat.send(player, "{ff0000}= {34abeb}/veh liv {40eb34}(id)   {ffffff} Changes the livery");
+      chat.send(player, "{ff0000}= {34abeb}/veh extra {40eb34}(id)   {ffffff} Toggles an extra");
+      chat.send(player, "{ff0000}= {34abeb}/veh plateText {40eb34}(id)   {ffffff} Sets the plate text");
       chat.send(player, "{ff0000} ========================");
 
       return;
     }
     else if (args[0] === "spawn") {
         if (args[1]!=null) {
-            let veh = spawnVeh(player, args[1], player.pos, player.rot, 20);
+            let veh = spawnVeh(player, args[1], player.pos, player.rot, 50);
             player.setIntoVehicle(veh, 1);
             return;
         }
@@ -742,14 +769,68 @@ chat.registerCmd("veh", (player, args) => {
             chat.send(player, "Du befindest dich nicht in einem Fahrzeug");
             return;
         }
-        else if (args[1] === null || args[2] === null)  {
+        else if (args[1] === null)  {
             chat.send(player, `Nicht ausreichende Parameter`);
             return;
         }
         else {
             let vehicle = player.vehicle;
+            
             try {
-                vehicle.setExtra(args[1],args[2]);
+                toggleExtra(player, vehicle, args[1]);
+            } catch (e) {
+                chat.send(player, `Irgendwas komisch`);
+                alt.log(e);
+            }
+        }
+        return;
+    }
+    else if (args[0] === "setExtra") {
+        if (player.vehicle == null) {
+            chat.send(player, "Du befindest dich nicht in einem Fahrzeug");
+            return;
+        }
+        else if (args[1] === null || args.length < 3)  {
+            chat.send(player, `Nicht ausreichende Parameter`);
+            return;
+        }
+        else {
+            let vehicle = player.vehicle;
+            let bool = false;
+            if (args[2] === "true") {
+                bool = true;
+            }
+
+            try {
+                setExtras(player, vehicle, args[1], bool);
+            } catch (e) {
+                chat.send(player, `Irgendwas komisch`);
+                alt.log(e);
+            }
+        }
+        return;
+    }
+    else if (args[0] === "plateText") {
+        if (player.vehicle == null) {
+            chat.send(player, "Du befindest dich nicht in einem Fahrzeug");
+            return;
+        }
+        else if (args[1] === null)  {
+            chat.send(player, `Nicht ausreichende Parameter`);
+            return;
+        }
+        else {
+            let vehicle = player.vehicle;
+            
+
+            let string = '';
+            
+            for (let i = 1; i < args.length; i++) {
+                string += args[i];
+            }
+
+            try {
+                vehicle.numberPlateText = string;
             } catch (e) {
                 chat.send(player, `Irgendwas komisch`);
                 alt.log(e);
@@ -759,56 +840,10 @@ chat.registerCmd("veh", (player, args) => {
     }
   });
 
-chat.registerCmd("pos", (player, args) => {
-  alt.log(`Position: ${player.pos.x}, ${player.pos.y}, ${player.pos.z}`);
-  chat.send(player, `Position: ${player.pos.x}, ${player.pos.y}, ${player.pos.z}`);
-});
 
-chat.registerCmd("rot", (player, args) => {
-    alt.log(`Rotation: ${player.rot.x}, ${player.rot.y}, ${player.rot.z}`);
-    chat.send(player, `Rotation: ${player.rot.x}, ${player.rot.y}, ${player.rot.z}`);
-  });
+// ---------------------------- PLAYER STUFF -------------------------------------
 
-chat.registerCmd("tp", (player, args) => {
-  if (args && args.length === 0) {
-    chat.send(player, "Usage: /tp (target player)");
-    return;
-  }
-  const foundPlayers = alt.Player.all.filter((p) => p.name === args[0]);
-  if (foundPlayers && foundPlayers.length > 0) {
-    player.pos = foundPlayers[0].pos;
-    chat.send(player, `You got teleported to {1cacd4}${foundPlayers[0].name}{ffffff}`);
-  } else {
-    chat.send(player, `{ff0000} Player {ff9500}${args[0]} {ff0000}not found..`);
-  }
-});
 
-chat.registerCmd("tptome", (player, args) => {
-    if (args && args.length === 0) {
-        chat.send(player, "Usage: /tp (target player)");
-        return;
-    }
-    const foundPlayers = alt.Player.all.filter((p) => p.name === args[0]);
-    if (foundPlayers && foundPlayers.length > 0) {
-        foundPlayers[0].pos = player.pos;
-        chat.send(foundPlayers[0], `You got teleported to {1cacd4}${player.name}{ffffff}`);
-    } else {
-        chat.send(player, `{ff0000} Player {ff9500}${args[0]} {ff0000}not found..`);
-    }
-});
-
-chat.registerCmd("tpalltome", (player, args) => {
-    
-    const foundPlayers = alt.Player.all;
-    if (foundPlayers && foundPlayers.length > 0) {
-        for (let i = 0; i < foundPlayers.length; i++) {
-            foundPlayers[i].pos = player.pos;
-            chat.send(foundPlayers[i], `You got teleported to {1cacd4}${player.name}{ffffff}`);
-        }
-    } else {
-        chat.send(player, `{ff0000} Player {ff9500}${args[0]} {ff0000}not found..`);
-    }
-});
 
 chat.registerCmd("model", (player, args) => {
   if (args.length === 0) {
@@ -821,14 +856,14 @@ chat.registerCmd("model", (player, args) => {
 
   alt.emit('auth:writeModel', username, args[0]);
   
-  
-  //const document = {
-  //    username,
-  //    model: args[0]
-  //};
+});
 
-  //const dbData = await db.insertData(document, 'models', true);
+chat.registerCmd("armour", (player, args) => {
+    player.armour = player.maxArmour;
+});
 
+chat.registerCmd("health", (player, args) => {
+    player.health = player.maxHealth;
 });
 
 chat.registerCmd("bus3state", (player, args) => {
@@ -837,8 +872,10 @@ chat.registerCmd("bus3state", (player, args) => {
       return;
     }
     bus3ExtraState(player, args[0]);
-  });
-  
+});
+//-------------------------------------- WEAPON STUFF -----------------------------------------
+
+
 
 chat.registerCmd("weapon", (player, args) => {
   if (args.length === 0) {
@@ -853,6 +890,28 @@ chat.registerCmd("weapons", (player, args) => {
     player.giveWeapon(alt.hash("weapon_" + weapon), 999, true);
   }
 });
+
+
+chat.registerCmd("ammo", (player, args) => {
+    chat.send(player, "Geht noch nicht");
+  });
+
+
+//------------------------------ Teleport stuff ---------------------------
+
+chat.registerCmd("tp", (player, args) => {
+    if (args && args.length === 0) {
+      chat.send(player, "Usage: /tp (target player)");
+      return;
+    }
+    const foundPlayers = alt.Player.all.filter((p) => p.name === args[0]);
+    if (foundPlayers && foundPlayers.length > 0) {
+      player.pos = foundPlayers[0].pos;
+      chat.send(player, `You got teleported to {1cacd4}${foundPlayers[0].name}{ffffff}`);
+    } else {
+      chat.send(player, `{ff0000} Player {ff9500}${args[0]} {ff0000}not found..`);
+    }
+  });
 
 chat.registerCmd("teleport", (player, args) => {
     if (args.length === 0) {
@@ -953,13 +1012,9 @@ chat.registerCmd("teleport", (player, args) => {
     }
 });
 
-chat.registerCmd("armour", (player, args) => {
-    player.armour = player.maxArmour;
-});
 
-chat.registerCmd("leben", (player, args) => {
-    player.health = player.maxHealth;
-});
+
+//----------------------- Motor Zeugs (natives fehlen) ---------------------------------------------
 
 chat.registerCmd("engine", (player, args) => {
 
@@ -1009,6 +1064,9 @@ chat.registerCmd("engineoff", (player, args) => {
     }
 });
 
+//------------------------------ ADMIN COMMANDS -------------------------------------------
+
+
 chat.registerCmd("ruston", (player, args) => {
     try {
 
@@ -1029,6 +1087,37 @@ chat.registerCmd("ruston", (player, args) => {
         alt.log(e);
     }
 });
+
+
+chat.registerCmd("tptome", (player, args) => {
+    if (args && args.length === 0) {
+        chat.send(player, "Usage: /tp (target player)");
+        return;
+    }
+    const foundPlayers = alt.Player.all.filter((p) => p.name === args[0]);
+    if (foundPlayers && foundPlayers.length > 0) {
+        foundPlayers[0].pos = player.pos;
+        chat.send(foundPlayers[0], `You got teleported to {1cacd4}${player.name}{ffffff}`);
+    } else {
+        chat.send(player, `{ff0000} Player {ff9500}${args[0]} {ff0000}not found..`);
+    }
+});
+
+chat.registerCmd("tpalltome", (player, args) => {
+    
+    const foundPlayers = alt.Player.all;
+    if (foundPlayers && foundPlayers.length > 0) {
+        for (let i = 0; i < foundPlayers.length; i++) {
+            foundPlayers[i].pos = player.pos;
+            chat.send(foundPlayers[i], `You got teleported to {1cacd4}${player.name}{ffffff}`);
+        }
+    } else {
+        chat.send(player, `{ff0000} Player {ff9500}${args[0]} {ff0000}not found..`);
+    }
+});
+
+
+//-------------------------- TRAIN STUFF -------------------------------------------
 
 chat.registerCmd("zug", (player, args) => {
     try {
@@ -1158,6 +1247,22 @@ chat.registerCmd("haenger", (player, args) => {
         alt.log(e);
     }
 });
+
+
+
+// ------------------------ INFO / DEBUG COMMANDS ---------------------------------------
+
+
+chat.registerCmd("pos", (player, args) => {
+    alt.log(`Position: ${player.pos.x}, ${player.pos.y}, ${player.pos.z}`);
+    chat.send(player, `Position: ${player.pos.x}, ${player.pos.y}, ${player.pos.z}`);
+  });
+  
+chat.registerCmd("rot", (player, args) => {
+    alt.log(`Rotation: ${player.rot.x}, ${player.rot.y}, ${player.rot.z}`);
+    chat.send(player, `Rotation: ${player.rot.x}, ${player.rot.y}, ${player.rot.z}`);
+  });
+
 
 chat.registerCmd("haengerpos", (player, args) => {
     
