@@ -173,6 +173,10 @@ function deleteFuhrpark() {
     });
 }
 
+function giveParachute(player){
+    player.giveWeapon(alt.hash("gadget_parachute"), 3, false);
+}
+
 
 function modVehicle(vehicle, player, modType, id) {
     try {
@@ -526,6 +530,11 @@ alt.on("playerDisconnect", (player, reason) => {
   });
   player.setMeta("vehicles", undefined);
   alt.log(`${player.name} has leaved the server becauseof ${reason}`);
+});
+
+
+alt.onClient('ipl:error', player => {
+    chat.send(player,"IPL handling error");
 });
 
 // =============================== Commands Begin ==================================================
@@ -907,6 +916,45 @@ chat.registerCmd("syncWeather", (args) => {
 });
 
 
+chat.registerCmd("scuba", (args) => {
+    
+    alt.emitClient(player, "freeroam:scuba");
+
+});
+
+chat.registerCmd("stamina", (args) => {
+    
+    alt.emitClient(player, "freeroam:stamina");
+
+});
+
+chat.registerCmd("lung", (args) => {
+    
+    alt.emitClient(player, "freeroam:lung");
+
+});
+
+
+chat.registerCmd("ipl", (args) => {
+
+    if (args.length < 3) {
+        chat.send(player, "Usage: /ipl (ipl-name) (load or unload)");
+        return;
+    }
+
+    let load = false;
+    if (args[1]==="load") {
+        load = true;
+    }
+    else {
+        load = false;
+    }
+    
+    alt.emitAllClients("freeroam:iplHandler", args[0], load);
+
+});
+
+
 
 
 
@@ -928,6 +976,10 @@ chat.registerCmd("weapons", (player, args) => {
   }
 });
 
+chat.registerCmd("Fallschirm", (player, args) => {
+    giveParachute(player);
+  });
+
 
 chat.registerCmd("ammo", (player, args) => {
     chat.send(player, "Geht noch nicht");
@@ -943,11 +995,27 @@ chat.registerCmd("tp", (player, args) => {
     }
     const foundPlayers = alt.Player.all.filter((p) => p.name === args[0]);
     if (foundPlayers && foundPlayers.length > 0) {
+
+
+
+
+
+
+
       player.pos = foundPlayers[0].pos;
       chat.send(player, `You got teleported to {1cacd4}${foundPlayers[0].name}{ffffff}`);
     } else {
       chat.send(player, `{ff0000} Player {ff9500}${args[0]} {ff0000}not found..`);
     }
+
+
+
+
+
+
+
+
+
   });
 
 chat.registerCmd("teleport", (player, args) => {
@@ -961,7 +1029,7 @@ chat.registerCmd("teleport", (player, args) => {
             alt.emitClient(player, "freeroam:switchInOutPlayer", false, 0, 2);
 
             let indexN = -1;
-            let inCar = false;
+            let isDriver = false;
             switch (args[0]) {
                 case "runway":
                     indexN = 0;
@@ -989,16 +1057,18 @@ chat.registerCmd("teleport", (player, args) => {
                 alt.emitClient(player, "freeroam:switchInOutPlayer", true);
             }
             if (player.vehicle != null) {
-                inCar = true;
+                if(player.vehicle.driver==player){
+                    isDriver=true;
+                }
             }
             else {
-                inCar = false;
+                isDriver = false;
             }
             setTimeout(function () {
                 alt.emitClient(player, "freeroam:switchInOutPlayer", true);
                 const location = locations[indexN];
                 const locationRot = locationsRot[indexN];
-                if (inCar == true) {
+                if (isDriver == true) {
                     let vehicle = player.vehicle;
                     //player.pos = location;
                     //player.rot =locationRot;
@@ -1051,7 +1121,7 @@ chat.registerCmd("teleport", (player, args) => {
 
 
 
-//----------------------- Motor Zeugs (natives fehlen) ---------------------------------------------
+//----------------------- Vehicle Zeugs (natives fehlen) ---------------------------------------------
 
 chat.registerCmd("engine", (player, args) => {
 
@@ -1099,6 +1169,22 @@ chat.registerCmd("engineoff", (player, args) => {
         chat.send(player, `verkackt`);
         alt.log(e);
     }
+});
+
+
+chat.registerCmd("toggelSiren", (args) => {
+    if (player.vehicle == null) {
+        return;
+    }
+    try {
+        player.vehicle.sirenActive = !player.vehicle.sirenActive;
+        chat.send(player, "Sirene toggled");
+    } catch (e) {
+        chat.send(player, `Sirene Kaputt`);
+        alt.log(e);
+    }
+    
+
 });
 
 //------------------------------ ADMIN COMMANDS -------------------------------------------

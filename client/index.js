@@ -164,3 +164,35 @@ function sendNotification(textColor, bgColor, message, blink) {
   game.addTextComponentSubstringPlayerName(message);
   game.drawNotification(blink, false);
 }
+
+alt.onServer("freeroam:scuba", () => {
+  game.setPedScubaGearVariation(alt.Player.local.scriptID);
+  //alt.setStat("stamina", 100);
+});
+
+alt.onServer("freeroam:lung", () => {
+  game.setPedScubaGearVariation(alt.Player.local.scriptID);
+  alt.setStat("lung_capacity", 100);
+});
+
+alt.onServer("freeroam:stamina", () => {
+  alt.setStat("stamina", 100);
+});
+
+
+alt.onServer("freeroam:iplHandler", handleIPL);
+
+function handleIPL(ipl, load,) {
+
+  try {
+    if (load){
+      alt.requestIpl(ipl);
+    }
+    else {
+      alt.removeIpl(ipl);
+    }
+  } catch (e) {
+    alt.emitServer('ipl:error');
+  }
+  
+}
