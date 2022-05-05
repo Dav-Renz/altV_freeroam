@@ -563,6 +563,7 @@ chat.registerCmd("ringtest", (player, args) => {
     let position = player.pos;
     position.z = position.z + 1;
     ring.pos = position;
+    ring.streamed = true;
     ring.visible = true;
     ring.netOwner = player;
 
