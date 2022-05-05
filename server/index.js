@@ -1,5 +1,6 @@
 import * as alt from "alt-server";
 import * as chat from "chat";
+//import * as gate from "stargate";
 //import * as sm from "simplymongo";
 //import json from "./fuhrpark.json";
 
@@ -550,6 +551,25 @@ chat.registerCmd("help", (player, args) => {
   chat.send(player, "{ff0000}= {34abeb}/armour    {ffffff} Gives full armour");
   chat.send(player, "{ff0000} ========================");
 });
+
+
+
+chat.registerCmd("ringtest", (player, args) => {
+
+    //alt.emit('auth:noModel', player);
+
+    ring = new alt.Entity;
+    ring.model = "prop_dumpster_4a";
+    let position = player.pos;
+    position.z = position.z + 1;
+    ring.pos = position;
+    ring.visible = true;
+    ring.netOwner = player;
+
+  });
+
+
+
 
 
 

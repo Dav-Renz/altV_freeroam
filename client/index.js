@@ -171,7 +171,6 @@ alt.onServer("freeroam:scuba", () => {
 });
 
 alt.onServer("freeroam:lung", () => {
-  game.setPedScubaGearVariation(alt.Player.local.scriptID);
   alt.setStat("lung_capacity", 100);
 });
 
