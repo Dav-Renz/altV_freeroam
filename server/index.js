@@ -1,32 +1,12 @@
 import * as alt from "alt-server";
 import * as chat from "chat";
-//import * as gate from "stargate";
-//import * as sm from "simplymongo";
-//import json from "./fuhrpark.json";
-
-//const db = sm.getDatabase();
-
 
 const spawnsPos = [
-  //{ x: -695.1956176757812, y: 83.94725036621094, z: 55.85205078125 },
-  //{ x: -527.6835327148438, y: -678.7252807617188, z: 33.6607666015625 }, //snr. muffin
-  //{ x: 200.6637420654297, y: -935.2879028320312, z: 30.6783447265625 }, // legion square
-  //{ x: 897.7318725585938, y: -1054.6944580078125, z: 32.818359375 },
-  //{ x: 363.1516418457031, y: -2123.156005859375, z: 16.052734375 },
-  //{ x: -265.3582458496094, y: -1898.0703125, z: 27.7464599609375 },
-    { x: 437.5912170410156, y: -623.037353515625, z: 28.8000000000000 }, //zob  
-  //{ x: -1481.1680000000000, y: -2860.9250000, z: 14.3000000000000 }, //lsia runway
+    { x: 437.5912170410156, y: -623.037353515625, z: 28.8000000000000 } //zob  
 ];
 
 const spawnsRot = [
-    //{ x: -695.1956176757812, y: 83.94725036621094, z: 55.85205078125 },
-    //{ x: -527.6835327148438, y: -678.7252807617188, z: 33.6607666015625 }, //snr. muffin
-    //{ x: 200.6637420654297, y: -935.2879028320312, z: 30.6783447265625 }, // legion square
-    //{ x: 897.7318725585938, y: -1054.6944580078125, z: 32.818359375 },
-    //{ x: 363.1516418457031, y: -2123.156005859375, z: 16.052734375 },
-    //{ x: -265.3582458496094, y: -1898.0703125, z: 27.7464599609375 },
-      { x: 0, y: 0, z: 1.7810605764389038 }, //zob  0, 0, 1.7810605764389038
-    //{ x: -1481.1680000000000, y: -2860.9250000, z: 14.3000000000000 }, //lsia runway
+      { x: 0, y: 0, z: 1.7810605764389038 } //zob  0, 0, 1.7810605764389038
   ];
 
 
@@ -144,17 +124,7 @@ const weapons = [
   "ball",
 ];
 
-
-//const jsonData= require('./fuhrpark.json'); 
-
-let train;
 let ruston;
-let haenger;
-let fuhrpark = [];
-let neue_GF;
-let fuhrpark_gespawnt = false;
-//let fahrzeuglisteJson = json;
-let fahrzeuglisteArr;
 
 function randomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
@@ -165,14 +135,6 @@ function getRandomListEntry(list) {
 }
 
 
-
-function deleteFuhrpark() {
-    fuhrpark.forEach((vehicle) => {
-        if (vehicle != null) {
-            vehicle.destroy();
-        }
-    });
-}
 
 function giveParachute(player){
     player.giveWeapon(alt.hash("gadget_parachute"), 3, false);
@@ -191,78 +153,6 @@ function modVehicle(vehicle, player, modType, id) {
 }
 
 
-function spawnFromList(player) {
-
-    try {
-        fahrzeuglisteArr = fahrzeuglisteJson.vehicles;
-
-        for (let i = 0; i < fahrzeuglisteArr.length; i++) {
-
-            let fahrzeug = fahrzeuglisteArr[i];
-            let vehicle = new alt.Vehicle(fahrzeug.model, fahrzeug.pos[0], fahrzeug.pos[1], fahrzeug.pos[2], fahrzeug.rot[0], fahrzeug.rot[1], fahrzeug.rot[2]);
-            fuhrpark.unshift(vehicle);
-            vehicle.manualEngineControl = fahrzeug.manualEngine;
-
-            if (vehicle.modKitsCount > 0) {
-                vehicle.modKit = fahrzeug.modKit;
-                for (let j = 0; j < fahrzeug.mods.length; j++) {
-                    vehicle.setMod(fahrzeug.mods[j], fahrzeug.modsID[j]);
-                }
-            }
-
-            if (fahrzeug.primCol != null) {
-                addCol(vehicle, "prim", fahrzeug.primCol, player);
-            }
-            if (fahrzeug.secCol != null) {
-                addCol(vehicle, "sec", fahrzeug.secCol, player);
-            }
-            if (fahrzeug.pearlCol != null) {
-                addCol(vehicle, "pearl", fahrzeug.pearlCol, player);
-            }
-            if (fahrzeug.roofState != null) {
-                vehicle.roofState = fahrzeug.roofState;
-            }
-            if (fahrzeug.numberPlateText != null) {
-                vehicle.numberPlateText = fahrzeug.numberPlateText;
-            }
-            
-        }        
-    } catch (e) {
-        alt.log(e);
-    }
-}
-
-
-function setWeather(weather) {
-
-    const players = alt.Player.all;
-    for (let i = 0; i < players.length; i++) {
-        try {
-            players[i].setWeather(weather);
-        } catch (e) {
-            alt.log(e);
-            alt.log("Wetter nicht verfügbar")
-        }
-    }
-}
-
-function setDateTime(day, month, year, hour, minute, second) {
-
-    const players = alt.Player.all;
-    for (let i = 0; i < players.length; i++) {
-        try {
-            players[i].setDateTime(day, month, year, hour, minute, second);
-        } catch (e) {
-            alt.log(e);
-            alt.log("Zeit nicht verfügbar");
-        }
-    }
-}
-
-
-function spawnFuhrpark(player) {
-    spawnFromList(player);
-}
 
 function addCol(vehicle, type, nr, player) {
     switch (type) {
@@ -320,64 +210,6 @@ function toggleExtra(player, vehicle, id) {
     
 }
 
-function bus3ExtraState(player, state){
-
-    if (player.vehicle === null) {
-        chat.send(player, "Du befindest dich nicht in einem Fahrzeug");
-        return;
-    }
-    let vehicle = player.vehicle;
-
-    if (state === null){
-        chat.send(player, "Du hast keinen Zustand definiert. Default angenommen");
-        setExtras(player, vehicle, 3, false);
-        setExtras(player, vehicle, 2, false);
-        setExtras(player, vehicle, 1, false);
-        setExtras(player, vehicle, 0, true);
-        return;
-    }
-
-    switch (state) {
-        case "0":
-            setExtras(player, vehicle, 3, false);
-            setExtras(player, vehicle, 2, false);
-            setExtras(player, vehicle, 1, false);
-            setExtras(player, vehicle, 0, true);
-            break;
-        case "1":
-            setExtras(player, vehicle, 0, false);
-            setExtras(player, vehicle, 1, true);
-            setExtras(player, vehicle, 2, false);
-            setExtras(player, vehicle, 3, false);
-            break;
-        case "2":
-            setExtras(player, vehicle, 0, false);
-            setExtras(player, vehicle, 1, true);
-            setExtras(player, vehicle, 2, true);
-            setExtras(player, vehicle, 3, false);
-            break;
-        case "3":
-            setExtras(player, vehicle, 0, false);
-            setExtras(player, vehicle, 1, true);
-            setExtras(player, vehicle, 2, false);
-            setExtras(player, vehicle, 3, true);
-            break;
-        case "4":
-            setExtras(player, vehicle, 0, false);
-            setExtras(player, vehicle, 1, true);
-            setExtras(player, vehicle, 2, true);
-            setExtras(player, vehicle, 3, true);
-            break;
-        default:
-            chat.send(player, `Default Zustand`);
-            setExtras(player, vehicle, 3, false);
-            setExtras(player, vehicle, 2, false);
-            setExtras(player, vehicle, 1, false);
-            setExtras(player, vehicle, 0, true);
-    }
-
-}
-
 
 
 function spawnVeh(player, model, pos, rot, max) {
@@ -405,59 +237,16 @@ function spawnVeh(player, model, pos, rot, max) {
 
 
 
-alt.on('playerConnect', showAuthWindow);
-
-//function playerConnect(player) {
-//    alt.emit('discord:BeginAuth', player);
-//}
-
-function showAuthWindow(player) {
-    alt.emitClient(player, 'auth:Open');
-    console.log(`${player.name} has connected!`);
-}
-
-alt.on('auth:Done', exitAuthWindow);
-
-function exitAuthWindow(player, id, username, email) {
-    alt.emitClient(player, 'auth:Exit');
-    console.log(`${player.name} has authenticated!`);
-    console.log(`Their Database ID is: ${id}`);
-    //initialSpawn(player, id, username, email);
-    alt.emit('auth:getModel', player, id, username, email);
-}
-
-
-//alt.on('discord:AuthDone', playerAuthDone);
-
-//function playerAuthDone(player, discordInfo) {
-//    console.log(discordInfo);
-//    initialSpawn(player);
-//}
+alt.on('playerConnect', initialSpawn);
 
 
 
-
-alt.on('auth:ModelGetted', initialSpawn);
-
-alt.on('auth:noModel', noModel);
-
-function noModel (player, id, userName, email) {
-
-    let model = spawnModels[getRandomListEntry(spawnModels)];
-
-    initialSpawn(player, id, userName, email, model)
-
-}
-
-
-
-
-function initialSpawn (player, id, username, email, model) {
+function initialSpawn (player) {
   if (player.name.includes("admin")) {
     player.kick();
     return;
   }
-/* 
+
   if ((player.name.includes("Dav") || player.name.includes("dav")) && (player.name.includes("Renz") || player.name.includes("renz")) ) {
     player.model = "u_f_y_danceburl_01";
   }
@@ -466,14 +255,11 @@ function initialSpawn (player, id, username, email, model) {
   }
   else {
       player.model = spawnModels[getRandomListEntry(spawnModels)];
-  } */
-
-  player.model = model;
+  }
 
 
   player.setMeta("vehicles", []);
   player.setMeta("trains", []);
-  player.setMeta("username", username)
   let index = getRandomListEntry(spawnsPos);
   const spawn = spawnsPos[index];
   player.spawn(spawn.x, spawn.y, spawn.z, 0);
@@ -534,10 +320,6 @@ alt.on("playerDisconnect", (player, reason) => {
 });
 
 
-alt.onClient('ipl:error', player => {
-    chat.send(player,"IPL handling error");
-});
-
 // =============================== Commands Begin ==================================================
 
 chat.registerCmd("help", (player, args) => {
@@ -551,25 +333,6 @@ chat.registerCmd("help", (player, args) => {
   chat.send(player, "{ff0000}= {34abeb}/armour    {ffffff} Gives full armour");
   chat.send(player, "{ff0000} ========================");
 });
-
-
-
-chat.registerCmd("ringtest", (player, args) => {
-
-    //alt.emit('auth:noModel', player);
-
-    ring = new alt.Entity;
-    ring.model = "prop_dumpster_4a";
-    let position = player.pos;
-    position.z = position.z + 1;
-    ring.pos = position;
-    ring.streamed = true;
-    ring.visible = true;
-    ring.netOwner = player;
-
-  });
-
-
 
 
 
@@ -905,10 +668,6 @@ chat.registerCmd("model", (player, args) => {
   }
   player.model = args[0];
 
-  let username = player.getMeta("username");
-
-  alt.emit('auth:writeModel', username, args[0]);
-  
 });
 
 chat.registerCmd("armour", (player, args) => {
@@ -919,29 +678,6 @@ chat.registerCmd("health", (player, args) => {
     player.health = player.maxHealth;
 });
 
-chat.registerCmd("bus3state", (player, args) => {
-    if (args.length === 0) {
-      chat.send(player, "Usage: /bus3state (number between 0 and 4)");
-      return;
-    }
-    bus3ExtraState(player, args[0]);
-});
-
-
-chat.registerCmd("syncTime", (args) => {
-    setDateTime(args[0], args[1], args[2], args[3], args[4], args[5])
-});
-
-chat.registerCmd("syncWeather", (args) => {
-    setWeather(args[0]);
-});
-
-
-chat.registerCmd("scuba", (args) => {
-    
-    alt.emitClient(player, "freeroam:scuba");
-
-});
 
 chat.registerCmd("stamina", (args) => {
     
@@ -954,29 +690,6 @@ chat.registerCmd("lung", (args) => {
     alt.emitClient(player, "freeroam:lung");
 
 });
-
-
-chat.registerCmd("ipl", (args) => {
-
-    if (args.length < 3) {
-        chat.send(player, "Usage: /ipl (ipl-name) (load or unload)");
-        return;
-    }
-
-    let load = false;
-    if (args[1]==="load") {
-        load = true;
-    }
-    else {
-        load = false;
-    }
-    
-    alt.emitAllClients("freeroam:iplHandler", args[0], load);
-
-});
-
-
-
 
 
 //-------------------------------------- WEAPON STUFF -----------------------------------------
@@ -1017,23 +730,11 @@ chat.registerCmd("tp", (player, args) => {
     const foundPlayers = alt.Player.all.filter((p) => p.name === args[0]);
     if (foundPlayers && foundPlayers.length > 0) {
 
-
-
-
-
-
-
       player.pos = foundPlayers[0].pos;
       chat.send(player, `You got teleported to {1cacd4}${foundPlayers[0].name}{ffffff}`);
     } else {
       chat.send(player, `{ff0000} Player {ff9500}${args[0]} {ff0000}not found..`);
     }
-
-
-
-
-
-
 
 
 
@@ -1142,72 +843,6 @@ chat.registerCmd("teleport", (player, args) => {
 
 
 
-//----------------------- Vehicle Zeugs (natives fehlen) ---------------------------------------------
-
-chat.registerCmd("engine", (player, args) => {
-
-    if (player.vehicle == null) {
-        return;
-    }
-    try {
-        if (player.vehicle.engineOn === false) {
-            player.vehicle.engineOn = true;
-            chat.send(player, "Motor angeschaltet");
-        }
-        else if(player.vehicle.engineOn===true) {
-            player.vehicle.engineOn = false;
-            chat.send(player, "Motor ausgeschaltet");
-        }
-    } catch (e) {
-        chat.send(player, `verkackt`);
-        alt.log(e);
-    }
-});
-
-chat.registerCmd("engineon", (player, args) => {
-
-    if (player.vehicle == null) {
-        return;
-    }
-    try {
-            player.vehicle.engineOn = true;
-            chat.send(player, "Motor angeschaltet");
-    } catch (e) {
-        chat.send(player, `verkackt`);
-        alt.log(e);
-    }
-});
-
-chat.registerCmd("engineoff", (player, args) => {
-
-    if (player.vehicle == null) {
-        return;
-    }
-    try {
-        player.vehicle.engineOn = false;
-        chat.send(player, "Motor ausgeschaltet");
-    } catch (e) {
-        chat.send(player, `verkackt`);
-        alt.log(e);
-    }
-});
-
-
-chat.registerCmd("toggelSiren", (args) => {
-    if (player.vehicle == null) {
-        return;
-    }
-    try {
-        player.vehicle.sirenActive = !player.vehicle.sirenActive;
-        chat.send(player, "Sirene toggled");
-    } catch (e) {
-        chat.send(player, `Sirene Kaputt`);
-        alt.log(e);
-    }
-    
-
-});
-
 //------------------------------ ADMIN COMMANDS -------------------------------------------
 
 
@@ -1261,137 +896,6 @@ chat.registerCmd("tpalltome", (player, args) => {
 });
 
 
-//-------------------------- TRAIN STUFF -------------------------------------------
-
-chat.registerCmd("zug", (player, args) => {
-    try {
-        let speed = 0
-        if (args.length === 0) {
-            speed = 5;
-        }
-        else {
-            speed = args[0];
-        }
-
-        let tram1 = new alt.Vehicle(alt.hash("metrotrain"), 193, -603, 16, 0, 0, 0);
-        tram1.isMissionTrain = false;
-        tram1.trainTrackId = 3;
-        tram1.setTrainEngineId(null);
-        tram1.trainConfigIndex = 25;
-        tram1.trainDistanceFromEngine = 0;
-        tram1.isTrainEngine = true; // Make this train the engine of the whole train
-        tram1.isTrainCaboose = false;
-        tram1.trainDirection = false;
-        tram1.trainPassengerCarriages = false; // Disable this train as a passenger carriage
-        tram1.trainRenderDerailed = false;
-        tram1.trainForceDoorsOpen = false;
-        tram1.trainCruiseSpeed = speed;
-        tram1.trainCarriageConfigIndex = 1;
-        tram1.setTrainLinkedToForwardId(null);
-        
-        let tram2 = new alt.Vehicle(alt.hash("metrotrain"), 193, -603, 16, 0, 0, 0);
-        tram2.isMissionTrain = false;
-        tram2.trainTrackId = 3;
-        tram2.setTrainEngineId(tram1);
-        tram2.trainConfigIndex = 25;
-        tram2.trainDistanceFromEngine = 0;
-        tram2.isTrainEngine = false; // Disable this train as the engine of the whole train
-        tram2.isTrainCaboose = false;
-        tram2.trainDirection = true;
-        tram2.trainPassengerCarriages = true; // Make this train as a passenger carriage
-        tram2.trainRenderDerailed = false;
-        tram2.trainForceDoorsOpen = true;
-        tram2.trainCarriageConfigIndex = 1;
-
-        tram2.setTrainLinkedToBackwardId(null); // Link no train to the back of this vehicle2
-        tram2.setTrainLinkedToForwardId(tram1); // Link vehicle to the front of the vehicle
-        tram1.setTrainLinkedToBackwardId(tram2); // Link vehicle2 to the back of the vehicle
-        
-        let ptrains = player.getMeta("trains");
-        if (ptrains.length > 8) {
-            let toDestroy = ptrains.pop();
-            if (toDestroy != null) {
-                toDestroy.destroy();
-            }
-        }
-        ptrains.unshift(tram1);
-        ptrains.unshift(tram2);
-        
-        player.setMeta("trains", ptrains);
-
-        alt.log("zug erstellt");
-        chat.send(player, "zug wurde erstellt");
-
-    } catch (e) {
-        alt.log(e);
-    }
-});
-
-chat.registerCmd("zugloeschen", (player, args) => {
-
-    let ptrains = player.getMeta("trains");
-
-    for (let i = 0; i < ptrains.length; i++) {
-        let toDestroy = ptrains.pop();
-        if (toDestroy != null) {
-            toDestroy.destroy();
-        }
-    }
-    chat.send(player, "Z�ge wurde entfernt")
-
-});
-
-chat.registerCmd("tpZug", (player, args) => {
-    
-    if (train != null) {
-        player.pos = train.pos;
-        chat.send(player, `You got teleported to the train`);
-    } else {
-        chat.send(player, `versuchs sp�ter nochmal`);
-    }
-});
-
-//chat.registerCmd("fuhrpark", (player, args) => {
-//    if (args.length === 0) {
-//        if (fuhrpark_gespawnt === false) {
-//            spawnFuhrpark(player);
-//            fuhrpark_gespawnt = true;
-//            chat.send(player, `Fuhrpark wurde gespawnt`);
-//        }
-//        else {
-//            chat.send(player, `Fuhrpark bereits gespawnt`);
-//        }
-//    }
-//    else if (args[0] === "force") {
-//        spawnFuhrpark(player);
-//        fuhrpark_gespawnt = true;
-//        chat.send(player, `Fuhrpark wurde gespawnt`);
-//    }
-//    else if (args[0] === "del") {
-//        try {
-//            if (fuhrpark.length === 0) {
-//                deleteFuhrpark();
-//            }
-//            else {
-//                deleteFuhrpark();
-//                chat.send(player, `Fuhrpark wurde gel�scht`);
-//            }
-//        } catch (e) {
-//            alt.log(e);
-//        }
-//        fuhrpark_gespawnt = false;
-//    }
-//});
-
-chat.registerCmd("haenger", (player, args) => {
-    try {
-        let vehicle = new alt.Vehicle("xdtrailer", player.pos, player.rot);
-        haenger = vehicle;
-    } catch (e) {
-        alt.log(e);
-    }
-});
-
 
 
 // ------------------------ INFO / DEBUG COMMANDS ---------------------------------------
@@ -1407,27 +911,6 @@ chat.registerCmd("rot", (player, args) => {
     chat.send(player, `Rotation: ${player.rot.x}, ${player.rot.y}, ${player.rot.z}`);
   });
 
-
-chat.registerCmd("haengerpos", (player, args) => {
-    
-    alt.log(`"pos": [ ${haenger.pos.x}, ${haenger.pos.y}, ${haenger.pos.z} ],`);
-    chat.send(player, `"pos": [ ${haenger.pos.x}, ${haenger.pos.y}, ${haenger.pos.z} ],`);
-});
-
-chat.registerCmd("haengerrot", (player, args) => {
-    alt.log(`"rot": [ ${haenger.rot.x}, ${haenger.rot.y}, ${haenger.rot.z} ],`);
-    chat.send(player, `"rot": [ ${haenger.rot.x}, ${haenger.rot.y}, ${haenger.rot.z} ],`);
-});
-
-chat.registerCmd("test", (player, args) => {
-    alt.log(`Test`);
-    try{
-        player.health = 0;
-    } catch (e) {
-        alt.log(e);
-    }
-    
-});
 
 chat.registerCmd("info", (player, args) => {
 
@@ -1462,22 +945,3 @@ chat.registerCmd("info", (player, args) => {
 
 // =============================== Commands End ====================================================
 
-
-//beispiel infos
-
-/*
-
-"model": "rt3000",
-      "pos": [ 433.26593017578125, -610.958251953125, 27.830810546875 ],
-      "rot": [ 0.000040216920751845464, 0.0009761358378455043, 1.4884426593780518 ],
-      "manualEngine": false,
-      "modKit": 1,
-      "mods": [],
-      "modsID": [],
-      "primCol": 84,
-      "secCol": 12,
-      "pearlCol": 70,
-      "roofState": false,
-      "numberPlateText": "Barry"
-
-*/
