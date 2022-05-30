@@ -170,6 +170,16 @@ alt.onServer("freeroam:scuba", () => {
   //alt.setStat("stamina", 100);
 });
 
+alt.onServer("freeroam:freeztime", () => {
+  try {
+    native.pauseClock(true);
+  } catch (e) {
+    alt.emitServer('ipl:error');
+  }
+  
+});
+
+
 alt.onServer("freeroam:lung", () => {
   alt.setStat("lung_capacity", 100);
 });
