@@ -947,6 +947,10 @@ chat.registerCmd("freezTime", (player) => {
     alt.emitClient(player, "freeroam:freeztime");
 });
 
+chat.registerCmd("freezTime2", (player) => {
+    alt.emitClient(player, "freeroam:freeztime2");
+});
+
 chat.registerCmd("syncWeather", (args) => {
     setWeather(args[0]);
 });
