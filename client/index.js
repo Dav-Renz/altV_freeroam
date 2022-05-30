@@ -179,6 +179,14 @@ alt.onServer("freeroam:freeztime", () => {
   
 });
 
+alt.onServer("freeroam:freeztime2", () => {
+  try {
+    game.pauseClock(true);
+  } catch (e) {
+    alt.emitServer('ipl:error');
+  }
+  
+});
 
 alt.onServer("freeroam:lung", () => {
   alt.setStat("lung_capacity", 100);
