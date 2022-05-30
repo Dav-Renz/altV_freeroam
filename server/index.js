@@ -929,7 +929,22 @@ chat.registerCmd("bus3state", (player, args) => {
 
 
 chat.registerCmd("syncTime", (args) => {
-    setDateTime(args[0], args[1], args[2], args[3], args[4], args[5])
+    setDateTime(args[0], args[1], args[2], args[3], args[4], args[5]);
+});
+
+
+chat.registerCmd("syncTime", (player, args) => {
+    player.setDateTime(args[0], args[1], args[2], args[3], args[4], args[5]);
+});
+
+
+chat.registerCmd("setZeitpunkt", (player) => {
+    player.setDateTime(29, 5, 2022, 18, 50, 0); // 7 AM on January 24, 1994
+    player.setWeather(0);
+});
+
+chat.registerCmd("freezTime", (player) => {
+    alt.emitClient(player, "freeroam:freeztime");
 });
 
 chat.registerCmd("syncWeather", (args) => {
@@ -937,13 +952,13 @@ chat.registerCmd("syncWeather", (args) => {
 });
 
 
-chat.registerCmd("scuba", (args) => {
+chat.registerCmd("scuba", (player) => {
     
     alt.emitClient(player, "freeroam:scuba");
 
 });
 
-chat.registerCmd("stamina", (args) => {
+chat.registerCmd("stamina", (player) => {
     
     alt.emitClient(player, "freeroam:stamina");
 
